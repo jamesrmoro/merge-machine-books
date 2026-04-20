@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://img.shields.io https://picsum.photos; media-src 'self'; connect-src 'self'; font-src 'self';">
+    <title>Merge Machine Books</title>
+    <link rel="preload" href="styles.css?version=1.2" as="style" />
+    <link rel="preload" href="assets/videos/bg-game.webm" as="video" type="video/webm" />
+    <link rel="icon" type="image/webp" href="assets/images/logo.webp" />
+    <link rel="stylesheet" href="styles.css?version=1.2" />
+  </head>
+  <body>
+    <a class="repo-banner-desktop" href="https://github.com/jamesrmoro/merge-machine-books" target="_blank" rel="noopener noreferrer" aria-label="Open Merge Machine Books repository on GitHub">
+      <img src="assets/images/fork-me-on-github.png" alt="Fork me on GitHub" />
+    </a>
+
+    <svg class="book-effects-svg" aria-hidden="true" focusable="false" width="0" height="0">
+      <defs>
+        <filter id="enhanced-turbulent-displace" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+          <feTurbulence type="turbulence" baseFrequency="0.03" numOctaves="12" result="noise1" seed="1">
+            <animate attributeName="baseFrequency" values="0.03;0.05;0.03" dur="4s" repeatCount="indefinite"/>
+          </feTurbulence>
+          <feOffset in="noise1" dx="0" dy="0" result="offsetNoise1">
+            <animate attributeName="dy" values="800; -200; 800" dur="8s" repeatCount="indefinite"/>
+          </feOffset>
+          <feTurbulence type="turbulence" baseFrequency="0.03" numOctaves="12" result="noise2" seed="2">
+            <animate attributeName="baseFrequency" values="0.03;0.04;0.03" dur="5s" repeatCount="indefinite"/>
+          </feTurbulence>
+          <feOffset in="noise2" dx="0" dy="0" result="offsetNoise2">
+            <animate attributeName="dy" values="-800; 300; -800" dur="7s" repeatCount="indefinite"/>
+          </feOffset>
+          <feComposite in="offsetNoise1" in2="offsetNoise2" result="combinedNoise"/>
+          <feDisplacementMap in="SourceGraphic" in2="combinedNoise" scale="22" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <filter id="electric-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
+
+    <video
+      class="screen-bg-video"
+      src="assets/videos/bg-game.webm"
+      autoplay
+      muted
+      loop
+      playsinline
+      aria-hidden="true"
+    ></video>
+    <section class="loader-screen" id="loaderScreen">
+      <img src="assets/images/logo.webp" alt="Logo do jogo" class="loader-logo" />
+      <button type="button" class="loader-play-btn" id="playBtn">Play</button>
+      <button type="button" class="loader-info-link" id="aboutGameLink">About the game</button>
+    </section>
+
+    <dialog class="info-modal tutorial-modal" id="tutorialModal">
+      <div class="info-modal-card tutorial-modal-card">
+        <h2>How to play</h2>
+        <video class="tutorial-video" src="assets/videos/tutorial.webm" muted autoplay loop playsinline preload="metadata" tabindex="-1"></video>
+        <button type="button" class="tutorial-confirm-btn" id="tutorialConfirmBtn">I understand</button>
+      </div>
+    </dialog>
+
+    <main class="game-shell is-hidden" id="gameShell">
+      <header class="top-ui">
+        <div class="top-left-controls">
+          <button class="menu-btn" type="button" id="menuBtn" aria-label="Abrir menu"></button>
+          <button class="sound-settings-btn" type="button" id="soundSettingsBtn" aria-label="Open audio settings">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M4 10v4h4l5 4V6L8 10H4Z"></path>
+              <path d="M16.5 8.5a1 1 0 0 1 1.41 0 5 5 0 0 1 0 7.07 1 1 0 1 1-1.41-1.41 3 3 0 0 0 0-4.25 1 1 0 0 1 0-1.41Z"></path>
+              <path d="M19.33 5.67a1 1 0 0 1 1.41 0 9 9 0 0 1 0 12.72 1 1 0 0 1-1.41-1.41 7 7 0 0 0 0-9.9 1 1 0 0 1 0-1.41Z"></path>
+            </svg>
+          </button>
+          <div class="sound-settings-panel is-hidden" id="soundSettingsPanel" aria-label="Configurações de áudio">
+            <label class="sound-toggle-row" for="soundMusicToggle">
+              <span>Music</span>
+              <input type="checkbox" id="soundMusicToggle" checked />
+              <span class="sound-switch" aria-hidden="true"></span>
+            </label>
+            <label class="sound-toggle-row" for="soundEffectsToggle">
+              <span>Effects</span>
+              <input type="checkbox" id="soundEffectsToggle" checked />
+              <span class="sound-switch" aria-hidden="true"></span>
+            </label>
+          </div>
+        </div>
+        <div class="resources">
+          <div class="pill hud-strip-item pill-menu-1">
+            <strong id="coins">150</strong>
+          </div>
+          <div class="pill hud-strip-item pill-menu-2" id="booksModalBtn" role="button" tabindex="0" aria-label="Abrir lista de livros">
+            <strong id="energy">0</strong>
+            <span class="books-lock-indicator" id="booksLockIndicator" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path d="M7 10V8a5 5 0 0 1 10 0v2h1.2A1.8 1.8 0 0 1 20 11.8v8.4a1.8 1.8 0 0 1-1.8 1.8H5.8A1.8 1.8 0 0 1 4 20.2v-8.4A1.8 1.8 0 0 1 5.8 10H7Zm2 0h6V8a3 3 0 1 0-6 0v2Z" fill="#ffd84a"></path>
+              </svg>
+            </span>
+            <span class="books-lock-message" id="booksLockMessage" role="status" aria-live="polite"></span>
+          </div>
+          <div class="pill hud-strip-item pill-menu-3">
+            <strong id="score">0</strong>
+          </div>
+          <button class="pill hud-strip-item pill-menu-4 record-pill-btn" type="button" id="recordModalBtn" aria-label="Abrir recorde">
+            
+          </button>
+        </div>
+      </header>
+
+      <section class="board-frame">
+        <video
+          class="board-bg-video"
+          src="assets/videos/bg-video.webm"
+          autoplay
+          muted
+          loop
+          playsinline
+          aria-hidden="true"
+        ></video>
+        <div class="board" id="board"></div>
+        <button class="destroy-drag-tool" type="button" id="destroyChargeBtn" aria-label="Power Cover">
+          <span class="destroy-drag-ring" aria-hidden="true">
+            <svg viewBox="0 0 40 56">
+              <rect class="destroy-charge-ring-track" x="1" y="1" width="38" height="54"></rect>
+              <rect class="destroy-charge-ring-progress" id="destroyChargeRingProgress" x="1" y="1" width="38" height="54"></rect>
+            </svg>
+          </span>
+          <img src="assets/images/default.webp" alt="" class="destroy-drag-icon" draggable="false" />
+          <span class="destroy-drag-points" id="destroyChargePoints">0</span>
+        </button>
+        <button class="destroy-drag-info-btn" type="button" id="destroyChargeInfoBtn" aria-label="How destroy power-up works">
+          <img src="assets/images/info.webp" alt="Destroy power-up help" draggable="false" />
+        </button>
+        <aside class="level-tracker" id="levelTracker" aria-label="Unlocked generations"></aside>
+      </section>
+
+      <footer class="bottom-ui">
+        <div class="bottom-panel">
+          <div class="nav-buttons">
+            <button id="shopBtn"></button>
+            <button id="collectionBtn"></button>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <dialog class="record-modal" id="recordModal">
+      <div class="record-modal-card">
+        <p id="record">0</p>
+        <button type="button" class="circle-close-btn" id="closeRecordModal" aria-label="Close record modal">×</button>
+        <h2>Record</h2>
+      </div>
+    </dialog>
+
+    <dialog class="books-modal" id="booksModal">
+      <div class="books-modal-card">
+        <button type="button" class="circle-close-btn" id="closeBooksModal" aria-label="Fechar lista de livros">×</button>
+        <div class="books-showcase-root" id="booksShowcaseRoot">
+          <div class="loading" id="loading">
+            <div id="loadingText">Loading...</div>
+            <div id="progressBar">
+              <div id="progressFill"></div>
+            </div>
+          </div>
+          <div class="infos" id="lesInfos">Congratulations, you won the game.</div>
+          <div id="booksShowcaseCanvasHost" class="books-showcase-canvas-host"></div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="game-over-modal" id="gameOverModal">
+      <div class="game-over-card">
+        <div class="game-over-actions">
+          <button type="button" class="icon-action-btn" id="gameOverHomeBtn" aria-label="Back to home"></button>
+          <button type="button" class="icon-action-btn" id="gameOverRetryBtn" aria-label="Retry game"></button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="info-modal" id="aboutGameModal">
+      <div class="info-modal-card">
+        <button type="button" class="circle-close-btn" id="closeAboutGameModal" aria-label="Close about game modal">×</button>
+        <h2>How to play</h2>
+        <p>Drag books to another column to merge equal levels, score points, and unlock rarer covers.</p>
+        <p>
+          Merge Machine Books is participating in the
+          <a class="jam-link" href="https://gamedevjs.com/competitions/gamedev-js-jam-2026-start-and-theme-announcement/" target="_blank" rel="noopener noreferrer">
+            Gamedev.js Jam 2026
+            <img src="assets/images/icon-link.svg" alt="" aria-hidden="true" class="jam-link-icon" />
+          </a>.
+        </p>
+      </div>
+    </dialog>
+
+    <dialog class="menu-modal" id="menuModal">
+      <div class="menu-modal-card">
+        <button type="button" class="circle-close-btn" id="closeMenuModal" aria-label="Close menu">×</button>
+        <img src="assets/images/logo.webp" alt="Merge Machine Books logo" class="menu-logo-small" />
+        <button type="button" class="text-link-btn" id="openTutorialModalBtn">
+          <span class="menu-action-label">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="menu-action-icon"><path d="M12 5v14M5 12h14"/></svg>
+            Watch tutorial again
+          </span>
+        </button>
+        <button type="button" class="text-link-btn" id="reloadHomeBtn">
+          <span class="menu-action-label">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="menu-action-icon"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v6h-6"/></svg>
+            Reload game home
+          </span>
+        </button>
+        <button type="button" class="text-link-btn" id="resetGameBtn">
+          <span class="menu-action-label">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="menu-action-icon"><path d="M4 7h16M9 7V5h6v2M10 11v6M14 11v6M6 7l1 12h10l1-12"/></svg>
+            Reset game
+          </span>
+        </button>
+        <p class="menu-highlight-credit">
+          Created by <strong>James Moro</strong> from
+          <a class="sprint-codes-link" href="https://www.sprintcodes.com.br" target="_blank" rel="noopener noreferrer">Sprint Codes</a>.
+        </p>
+        <div class="share-buttons" aria-label="Share this game">
+          <a
+            class="share-btn share-btn-facebook"
+            href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.sprintcodes.com.br%2Fmerge-machine-books"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share on Facebook"
+            title="Facebook"
+          >
+            <span class="sr-only">Facebook</span>
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" x="0" y="0" viewBox="0 0 100 100" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="M40.4 55.2h-9.9c-1.6 0-2.1-.6-2.1-2.1V41c0-1.6.6-2.1 2.1-2.1h9.9v-8.8c0-4 .7-7.8 2.7-11.3 2.1-3.6 5.1-6 8.9-7.4 2.5-.9 5-1.3 7.7-1.3h9.8c1.4 0 2 .6 2 2v11.4c0 1.4-.6 2-2 2-2.7 0-5.4 0-8.1.1-2.7 0-4.1 1.3-4.1 4.1-.1 3 0 5.9 0 9h11.6c1.6 0 2.2.6 2.2 2.2V53c0 1.6-.5 2.1-2.2 2.1H57.3v32.6c0 1.7-.5 2.3-2.3 2.3H42.5c-1.5 0-2.1-.6-2.1-2.1V55.2z" fill="#ffffff" opacity="1" data-original="#000000" class=""></path></g></svg>
+          </a>
+          <a
+            class="share-btn share-btn-x"
+            href="https://x.com/intent/tweet?url=https%3A%2F%2Fwww.sprintcodes.com.br%2Fmerge-machine-books&text=Play%20Merge%20Machine%20Books!"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share on X"
+            title="X"
+          >
+            <span class="sr-only">X</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M18.9 3H22l-6.8 7.8L23 21h-6.2l-4.9-6.4L6.3 21H3.2l7.2-8.2L1 3h6.3l4.4 5.8L18.9 3Zm-1.1 16h1.7L6.4 4.9H4.6L17.8 19Z"></path>
+            </svg>
+          </a>
+          <a
+            class="share-btn share-btn-whatsapp"
+            href="https://wa.me/?text=Play%20Merge%20Machine%20Books!%20https%3A%2F%2Fwww.sprintcodes.com.br%2Fmerge-machine-books"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share on WhatsApp"
+            title="WhatsApp"
+          >
+            <span class="sr-only">WhatsApp</span>
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" x="0" y="0" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="M435.922 74.352C387.824 26.434 323.84.027 255.742 0 187.797 0 123.711 26.383 75.297 74.29 26.797 122.276.063 186.05 0 253.628v.125c.008 40.902 10.754 82.164 31.152 119.828L.7 512l140.012-31.848c35.46 17.871 75.027 27.293 114.934 27.309h.101c67.934 0 132.02-26.387 180.441-74.297 48.543-48.027 75.29-111.719 75.32-179.34.02-67.144-26.82-130.883-75.585-179.472zM255.742 467.5h-.09c-35.832-.016-71.336-9.012-102.668-26.023l-6.62-3.594-93.102 21.176 20.222-91.907-3.898-6.722C50.203 327.004 39.96 290.105 39.96 253.71c.074-117.8 96.863-213.75 215.773-213.75 57.446.024 111.422 22.294 151.985 62.7 41.176 41.031 63.844 94.711 63.824 151.153-.047 117.828-96.856 213.687-215.8 213.687zm0 0" fill="#fff" opacity="1" data-original="#000000" class=""></path><path d="M186.152 141.863h-11.21c-3.903 0-10.239 1.461-15.598 7.293-5.364 5.836-20.477 19.942-20.477 48.63s20.965 56.405 23.887 60.3c2.926 3.89 40.469 64.64 99.93 88.012 49.418 19.422 59.476 15.558 70.199 14.586 10.726-.97 34.613-14.102 39.488-27.715s4.875-25.285 3.414-27.723c-1.465-2.43-5.367-3.887-11.215-6.8-5.851-2.919-34.523-17.262-39.886-19.212-5.364-1.941-9.262-2.914-13.164 2.926-3.903 5.828-15.391 19.313-18.805 23.203-3.41 3.895-6.824 4.383-12.676 1.465-5.852-2.926-24.5-9.191-46.848-29.05-17.394-15.458-29.464-35.169-32.879-41.005-3.41-5.832-.363-8.988 2.57-11.898 2.63-2.61 6.18-6.18 9.106-9.582 2.922-3.406 3.754-5.836 5.707-9.727 1.95-3.89.973-7.296-.488-10.21-1.465-2.919-12.691-31.75-17.895-43.282h.004c-4.382-9.71-8.996-10.039-13.164-10.21zm0 0" fill="#fff" opacity="1" data-original="#000000" class=""></path></g></svg>
+          </a>
+          <a
+            class="share-btn share-btn-telegram"
+            href="https://t.me/share/url?url=https%3A%2F%2Fwww.sprintcodes.com.br%2Fmerge-machine-books&text=Play%20Merge%20Machine%20Books!"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share on Telegram"
+            title="Telegram"
+          >
+            <span class="sr-only">Telegram</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M21.4 4.6c.3-1.1-.4-1.6-1.4-1.2L3.6 9.7C2.5 10.1 2.5 10.8 3.4 11l4.2 1.3 1.6 5c.2.7.1 1 .8 1 .5 0 .8-.2 1.1-.5l2-2 4.2 3.1c.8.5 1.3.3 1.5-.7l2.6-13.6ZM8.6 12l9.7-6.1c.5-.3 1-.1.6.2L10.6 14l-.3 3.2-1.7-5.2Z"></path>
+            </svg>
+          </a>
+          <a
+            class="share-btn share-btn-linkedin"
+            href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.sprintcodes.com.br%2Fmerge-machine-books"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share on LinkedIn"
+            title="LinkedIn"
+          >
+            <span class="sr-only">LinkedIn</span>
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" x="0" y="0" viewBox="0 0 100 100" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="M90 90V60.7c0-14.4-3.1-25.4-19.9-25.4-8.1 0-13.5 4.4-15.7 8.6h-.2v-7.3H38.3V90h16.6V63.5c0-7 1.3-13.7 9.9-13.7 8.5 0 8.6 7.9 8.6 14.1v26H90zM11.3 36.6h16.6V90H11.3zM19.6 10c-5.3 0-9.6 4.3-9.6 9.6s4.3 9.7 9.6 9.7 9.6-4.4 9.6-9.7-4.3-9.6-9.6-9.6z" fill="#fff" opacity="1" data-original="#000000" class=""></path></g></svg>
+          </a>
+          <a
+            class="share-btn share-btn-reddit"
+            href="https://www.reddit.com/submit?url=https%3A%2F%2Fwww.sprintcodes.com.br%2Fmerge-machine-books&title=Merge%20Machine%20Books"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share on Reddit"
+            title="Reddit"
+          >
+            <span class="sr-only">Reddit</span>
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" x="0" y="0" viewBox="0 0 100 100" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="M90 50.6c-.2-4.8-4.2-8.6-9.1-8.5-2.2.1-4.2 1-5.7 2.4-6.8-4.7-14.9-7.2-23.2-7.4l3.9-18.7L68.8 21c.4 3.3 3.3 5.7 6.6 5.3s5.7-3.3 5.3-6.6-3.3-5.7-6.6-5.3c-1.9.2-3.6 1.3-4.5 2.9l-14.7-2.9c-1-.2-2 .4-2.2 1.4l-4.4 20.9c-8.4.1-16.5 2.7-23.5 7.4-3.5-3.3-9.1-3.2-12.4.4-3.3 3.5-3.2 9.1.4 12.4.7.6 1.5 1.2 2.4 1.6-.1.9-.1 1.8 0 2.6 0 13.5 15.7 24.5 35.1 24.5s35.1-10.9 35.1-24.5c.1-.9.1-1.8 0-2.6 2.8-1.4 4.7-4.5 4.6-7.9zm-60.3 6.1c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6-6-2.7-6-6zm35 16.6c-4.3 3.2-9.5 4.9-14.8 4.6-5.3.2-10.6-1.4-14.8-4.6-.6-.7-.5-1.7.2-2.3.6-.5 1.4-.5 2.1 0 3.6 2.6 8 4 12.5 3.8 4.5.2 8.9-1 12.6-3.7.7-.6 1.7-.6 2.4 0 .6.7.6 1.7 0 2.4v-.2zm-1-10.3c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6c.1 3.3-2.4 6.1-5.8 6.2h-.3z" fill="#fff" opacity="1" data-original="#000000" class=""></path></g></svg>
+          </a>
+          <a
+            class="share-btn share-btn-github"
+            href="https://github.com/jamesrmoro/merge-machine-books"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open GitHub repository"
+            title="GitHub"
+          >
+            <span class="sr-only">GitHub</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 2C6.48 2 2 6.58 2 12.22c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.58 2.35 1.12 2.92.86.09-.67.35-1.12.64-1.38-2.22-.26-4.56-1.14-4.56-5.08 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .85-.28 2.79 1.05A9.45 9.45 0 0 1 12 6.9c.85 0 1.71.12 2.51.35 1.94-1.33 2.78-1.05 2.78-1.05.56 1.4.21 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.95-2.34 4.81-4.57 5.07.36.32.69.95.69 1.92 0 1.39-.01 2.5-.01 2.84 0 .27.18.59.69.49A10.2 10.2 0 0 0 22 12.22C22 6.58 17.52 2 12 2Z"></path>
+            </svg>
+          </a>
+          <a
+            class="share-btn share-btn-email"
+            href="mailto:?subject=Merge%20Machine%20Books&body=Play%20Merge%20Machine%20Books!%20https%3A%2F%2Fwww.sprintcodes.com.br%2Fmerge-machine-books"
+            aria-label="Share by Email"
+            title="Email"
+          >
+            <span class="sr-only">Email</span>
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" x="0" y="0" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="M467 76H45C20.238 76 0 96.149 0 121v270c0 24.86 20.251 45 45 45h422c24.762 0 45-20.149 45-45V121c0-24.857-20.248-45-45-45zm-6.91 30L267.624 299.094c-5.864 5.882-17.381 5.886-23.248 0L51.91 106h408.18zM30 385.485v-258.97L159.065 256 30 385.485zM51.91 406l128.334-128.752 42.885 43.025c17.574 17.631 48.175 17.624 65.743 0l42.885-43.024L460.09 406H51.91zM482 385.485 352.935 256 482 126.515v258.97z" fill="#ffffff" opacity="1" data-original="#000000" class=""></path></g></svg>
+          </a>
+        </div>
+        <button type="button" class="text-link-btn" id="openPrivacyModal">Privacy Policy</button>
+        <p class="app-version">Version: v1.0.0</p>
+      </div>
+    </dialog>
+
+    <dialog class="info-modal" id="resetGameConfirmModal">
+      <div class="info-modal-card reset-confirm-card">
+        <button type="button" class="circle-close-btn" id="closeResetGameConfirmModal" aria-label="Close reset game confirmation">×</button>
+        <h2>Reset game progress?</h2>
+        <p>This will erase your saved game, score, and record history.</p>
+        <p>This action cannot be undone.</p>
+        <div class="reset-confirm-actions">
+          <button type="button" class="text-link-btn" id="cancelResetGameBtn">Cancel</button>
+          <button type="button" class="tutorial-confirm-btn" id="confirmResetGameBtn">Yes, reset game</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="info-modal" id="privacyModal">
+      <div class="info-modal-card">
+        <button type="button" class="circle-close-btn" id="closePrivacyModal" aria-label="Close privacy policy modal">×</button>
+        <h2>Privacy Policy</h2>
+        <p>This game only stores local progress in your browser (score and game state). No personal data is sent to external servers.</p>
+      </div>
+    </dialog>
+
+    <dialog class="info-modal" id="archiveWarningModal">
+      <div class="info-modal-card archive-warning-card">
+        <button type="button" class="circle-close-btn" id="closeArchiveWarningModal" aria-label="Close archive warning">×</button>
+        <h2>ARCHIVE Warning</h2>
+        <p class="archive-warning-saved-label">Saved book</p>
+        <div class="archive-warning-saved-card" id="archiveWarningSavedCard" aria-hidden="true"></div>
+        <p class="archive-warning-saved-value">Generation: <strong id="archiveWarningSavedCardValue">-</strong></p>
+        <p>
+          This action will destroy your highest book.
+          You can pay <strong id="archiveWarningHalfCost">50%</strong> (half of your score) to save it.
+        </p>
+        <div class="archive-warning-actions">
+          <button type="button" class="archive-warning-btn archive-warning-btn-accept" id="acceptArchiveProposalBtn" aria-label="Accept offer"></button>
+          <button type="button" class="archive-warning-btn archive-warning-btn-destroy" id="destroyHighestCardBtn" aria-label="Destroy card"></button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="info-modal" id="destroyChargeInfoModal">
+      <div class="info-modal-card">
+        <button type="button" class="circle-close-btn" id="closeDestroyChargeInfoModal" aria-label="Close destroy power-up help">×</button>
+        <h2>Destroy power-up</h2>
+        <p>
+          This power-up lets you destroy one book by dragging the Power Cover onto the book you want to remove.
+        </p>
+        <p>
+          The Power Cover recharge takes <strong>1 minute and 30 seconds</strong> for each new charge.
+        </p>
+      </div>
+    </dialog>
+
+    <dialog class="generation-modal" id="generationModal">
+      <div class="generation-modal-card">
+        <button type="button" class="circle-close-btn" id="closeGenerationModal" aria-label="Close card modal">×</button>
+        <div class="card-scale-wrapper electric-generation-wrapper">
+          <div class="card-container" id="electricGenerationCardContainer">
+            <div class="inner-container">
+              <div class="border-outer-1">
+                <div class="border-outer-2">
+                  <div class="border-outer-3">
+                    <div class="generation-flip-card main-card" id="generationFlipCard">
+                      <div class="generation-flip-face generation-flip-front" id="generationFlipFront"></div>
+                      <div class="generation-flip-face generation-flip-back">
+                        <p class="generation-back-kicker">Book Evolution</p>
+                        <h2 id="generationFlipTitle">Tier 0</h2>
+                        <p id="generationFlipDescription">A mysterious book from the archive.</p>
+                        <p id="generationFlipEffect">Effect: Progression support.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="glow-layer-1"></div>
+              <div class="glow-layer-2"></div>
+              <div class="glow-layer-3"></div>
+              <div class="glow-layer-4"></div>
+            </div>
+            <div class="overlay-1"></div>
+            <div class="overlay-2"></div>
+            <div class="overlay-3"></div>
+            <div class="background-glow"></div>
+            <div class="energy-particles"></div>
+          </div>
+        </div>
+        <p class="generation-touch-hint" id="generationTouchHint">Touch</p>
+      </div>
+    </dialog>
+
+    <template id="item-template">
+      <div class="item" draggable="true">
+        <span class="item-label"></span>
+      </div>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" integrity="sha384-9EQoUIJYrv09/oYhSxnw1VpLcfPw3BM9dE7+D/3wGUPeLLa7F9Z6OAoD+i/M6FK9" crossorigin="anonymous" defer></script>
+    <script src="js/books-showcase.js" defer></script>
+    <script src="js/book-effect.js" defer></script>
+    <script src="js/modules/game-core.js" defer></script>
+    <script src="js/modules/game-managers.js" defer></script>
+    <script src="js/game.js" defer></script>
+  </body>
+</html>

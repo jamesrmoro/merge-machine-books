@@ -1,0 +1,155 @@
+:root {
+  --electric-primary: #ff6b35;
+  --electric-secondary: #f7931e;
+  --electric-tertiary: #ffd23f;
+  --electric-accent: #06ffa5;
+  --gradient-primary: rgba(255, 107, 53, 0.45);
+  --gradient-secondary: rgba(247, 147, 30, 0.4);
+  --color-neutral-900: #170f26;
+  --color-neutral-800: #22143b;
+}
+
+.book-effects-svg {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.generation-modal .electric-generation-wrapper {
+  width: min(72vw, 260px);
+  transform: none;
+}
+
+.generation-modal .card-container {
+  position: relative;
+  border-radius: 24px;
+  padding: 3px;
+  background:
+    linear-gradient(-45deg, var(--gradient-primary), transparent 32%, var(--gradient-secondary) 54%, transparent 76%, var(--gradient-primary)),
+    linear-gradient(to bottom, var(--color-neutral-900), var(--color-neutral-800), var(--color-neutral-900));
+  box-shadow: 0 0 60px rgba(255, 107, 53, 0.34), 0 0 130px rgba(255, 107, 53, 0.13);
+}
+
+.generation-modal .inner-container {
+  position: relative;
+}
+
+.generation-modal .border-outer-1,
+.generation-modal .border-outer-2,
+.generation-modal .border-outer-3 {
+  border-radius: 18px;
+}
+
+.generation-modal .border-outer-1 {
+  border: 2px solid rgba(255, 107, 53, 0.75);
+  padding: 4px;
+  animation: voltageGlow1 2.4s ease-in-out infinite;
+}
+
+.generation-modal .border-outer-2 {
+  border: 2px solid rgba(247, 147, 30, 0.7);
+  padding: 3px;
+  animation: voltageGlow2 2.8s ease-in-out infinite reverse;
+}
+
+.generation-modal .border-outer-3 {
+  border: 2px solid rgba(255, 210, 63, 0.55);
+  padding: 2px;
+  animation: voltageGlow3 3.2s ease-in-out infinite;
+}
+
+
+.generation-modal .border-outer-3 {
+  position: relative;
+}
+
+.generation-modal .border-outer-3::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 136, 52, 0.9);
+  filter: url(#enhanced-turbulent-displace) drop-shadow(0 0 8px rgba(255, 140, 60, 0.85));
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: edgeCrackle 1.8s linear infinite;
+  z-index: 1;
+}
+
+.generation-modal .main-card.generation-flip-card {
+  z-index: 2;
+  width: min(62vw, 220px);
+  aspect-ratio: 3/4;
+  height: auto;
+  margin: 0;
+  border-radius: 12px;
+  border: 2px solid var(--electric-primary);
+  overflow: hidden;
+  position: relative;
+}
+
+.generation-modal .main-card.generation-flip-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, transparent 38%, rgba(255, 160, 90, 0.08) 52%, transparent 68%);
+  animation: innerGlow 2.8s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.generation-modal .generation-flip-face {
+  z-index: 2;
+}
+
+.generation-modal .glow-layer-1,
+.generation-modal .glow-layer-2,
+.generation-modal .glow-layer-3,
+.generation-modal .glow-layer-4,
+.generation-modal .overlay-1,
+.generation-modal .overlay-2,
+.generation-modal .overlay-3,
+.generation-modal .background-glow,
+.generation-modal .energy-particles {
+  position: absolute;
+  inset: -6px;
+  border-radius: 22px;
+  pointer-events: none;
+}
+
+.generation-modal .glow-layer-1 { border: 1px solid rgba(255, 107, 53, 0.65); filter: blur(1.6px); animation: subtleGlow1 2.2s ease-in-out infinite; }
+.generation-modal .glow-layer-2 { inset: -8px; border: 1px solid rgba(247, 147, 30, 0.5); filter: blur(2.4px); animation: subtleGlow2 2.9s ease-in-out infinite reverse; }
+.generation-modal .glow-layer-3 { inset: -10px; border: 1px solid rgba(255, 210, 63, 0.44); filter: blur(3.2px); animation: subtleGlow3 3.5s ease-in-out infinite; }
+.generation-modal .glow-layer-4 { inset: -12px; border: 1px solid rgba(6, 255, 165, 0.36); filter: blur(4px); animation: subtleGlow4 4.1s ease-in-out infinite reverse; }
+
+.generation-modal .overlay-1 { inset: -10px; background: radial-gradient(circle, rgba(255, 107, 53, 0.2) 0%, transparent 72%); mix-blend-mode: screen; }
+.generation-modal .overlay-2 { inset: -12px; background: radial-gradient(circle, rgba(247, 147, 30, 0.12) 0%, transparent 72%); mix-blend-mode: overlay; }
+.generation-modal .overlay-3 { inset: -14px; background: radial-gradient(circle, rgba(255, 210, 63, 0.1) 0%, transparent 74%); mix-blend-mode: color-dodge; }
+.generation-modal .background-glow { inset: -16px; filter: blur(22px); background: radial-gradient(ellipse, rgba(255, 107, 53, 0.5) 0%, rgba(247, 147, 30, 0.3) 45%, rgba(6, 255, 165, 0.2) 100%); }
+.generation-modal .energy-particles { inset: -18px; opacity: 0.08; background: radial-gradient(circle at 50% 50%, rgba(255, 107, 53, 0.28) 0%, transparent 52%); }
+
+.generation-modal .electric-ripple {
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 107, 53, 0.65) 0%, rgba(6, 255, 165, 0.3) 100%);
+  z-index: 8;
+}
+
+@keyframes voltageGlow1 { 0%,100% { box-shadow: 0 0 10px rgba(255,107,53,.4);} 50% { box-shadow: 0 0 20px rgba(255,107,53,.8);} }
+@keyframes voltageGlow2 { 0%,100% { box-shadow: 0 0 9px rgba(247,147,30,.35);} 50% { box-shadow: 0 0 18px rgba(247,147,30,.75);} }
+@keyframes voltageGlow3 { 0%,100% { box-shadow: 0 0 8px rgba(255,210,63,.3);} 50% { box-shadow: 0 0 15px rgba(255,210,63,.6);} }
+@keyframes subtleGlow1 { 0%,100% { opacity: .44; } 50% { opacity: .92; } }
+@keyframes subtleGlow2 { 0%,100% { opacity: .34; } 50% { opacity: .72; } }
+@keyframes subtleGlow3 { 0%,100% { opacity: .26; } 50% { opacity: .62; } }
+@keyframes subtleGlow4 { 0%,100% { opacity: .2; } 50% { opacity: .54; } }
+@keyframes innerGlow { 0% { opacity: .3; } 100% { opacity: .9; } }
+
+.generation-modal { overflow: hidden; }
+.generation-modal-card { overflow: visible; }
+@keyframes edgeCrackle {
+  0% { opacity: 0.65; transform: translateZ(0); }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}

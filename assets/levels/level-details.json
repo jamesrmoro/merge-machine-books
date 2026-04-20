@@ -1,0 +1,102 @@
+{
+  "2": {
+    "title": "Knowledge Propulsion",
+    "description": "An ebook that activates quick action, turns ideas into motion, and accelerates your growth.",
+    "effect": "Increases early progression speed."
+  },
+  "4": {
+    "title": "Dragon Instinct",
+    "description": "An ebook that awakens inner power, unlocking strength, focus, and determination to move forward fearlessly.",
+    "effect": "Improves focus and execution consistency."
+  },
+  "8": {
+    "title": "Investigative Sight",
+    "description": "An ebook that reveals hidden details and boosts your perception to uncover patterns.",
+    "effect": "Improves pattern detection accuracy."
+  },
+  "16": {
+    "title": "Exponential Growth",
+    "description": "An ebook that accelerates progress and multiplies your results and potential over time.",
+    "effect": "Scales growth over consecutive merges."
+  },
+  "32": {
+    "title": "Knowledge Magic",
+    "description": "An ebook that transforms knowledge into power, awakening unique skills and insights.",
+    "effect": "Converts knowledge into practical gains."
+  },
+  "64": {
+    "title": "Recipe for Success",
+    "description": "An ebook that teaches perfect timing and turns knowledge into practical results.",
+    "effect": "Improves timing for high-value actions."
+  },
+  "128": {
+    "title": "Primordial Evolution",
+    "description": "An ebook that drives natural growth and awakens raw potential with continuous evolution.",
+    "effect": "Raises base growth rate over time."
+  },
+  "256": {
+    "title": "Artificial Awareness",
+    "description": "An ebook that expands intelligence, optimizes decisions, and speeds up reasoning.",
+    "effect": "Optimizes decision quality and speed."
+  },
+  "512": {
+    "title": "Kingdom of Knowledge",
+    "description": "An ebook that builds your power base and strengthens your structure as you evolve.",
+    "effect": "Strengthens long-run stability."
+  },
+  "1024": {
+    "title": "Strategic Direction",
+    "description": "An ebook that guides your choices and points to the best path for efficient evolution.",
+    "effect": "Improves route planning efficiency."
+  },
+  "2048": {
+    "title": "Expanded Vision",
+    "description": "An ebook that expands your reach and lets you see opportunities beyond the obvious.",
+    "effect": "Expands opportunity detection range."
+  },
+  "4096": {
+    "title": "Knowledge Essence",
+    "description": "An ebook that concentrates pure wisdom and refines learning into high value.",
+    "effect": "Concentrates value from each merge."
+  },
+  "8192": {
+    "title": "System Gear",
+    "description": "An ebook that optimizes your operation and aligns processes for maximum efficiency.",
+    "effect": "Aligns processes for higher throughput."
+  },
+  "16384": {
+    "title": "Idea Amplifier",
+    "description": "An ebook that amplifies your voice and extends the reach of your knowledge.",
+    "effect": "Amplifies output impact and reach."
+  },
+  "32768": {
+    "title": "Infinite Flow",
+    "description": "An ebook that keeps everything in motion, creating a continuous cycle of learning and evolution.",
+    "effect": "Maintains continuous progress flow."
+  },
+  "65536": {
+    "title": "Free Creation",
+    "description": "An ebook that frees your imagination and transforms ideas into unique forms.",
+    "effect": "Expands creative solution space."
+  },
+  "131072": {
+    "title": "Journey Kit",
+    "description": "An ebook that prepares you to advance and gathers everything needed to evolve.",
+    "effect": "Improves readiness for advanced stages."
+  },
+  "262144": {
+    "title": "Natural Growth",
+    "description": "An ebook that strengthens constant evolution and develops balanced progress.",
+    "effect": "Supports steady and balanced scaling."
+  },
+  "524288": {
+    "title": "Supreme Rebirth",
+    "description": "An ebook that turns defeat into strength and lets you restart stronger after every fall.",
+    "effect": "Improves recovery after setbacks."
+  },
+  "1048576": {
+    "title": "Absolute Dominion",
+    "description": "An ebook that elevates your status to the top and grants total control over your evolution.",
+    "effect": "Maximizes control over progression."
+  }
+}
